@@ -22,7 +22,9 @@ router.get('/', async (req, res) => {
     const userId = req.usuarioid
 
     let conn = db.getConn();
-    const productos = await conn.query(`SELECT * FROM carrito WHERE usuarioid = ${userId}`)
+    const productos = await conn.query(`SELECT carrito.productoid, productos.name,  productos.unitCost, productos.currency, productos.image 
+    FROM carrito
+    INNER JOIN productos ON carrito.productoid = productos.id where carrito.usuarioid = ${userId}`) 
     console.log(productos);
     res.json(productos);
 });
