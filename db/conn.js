@@ -40,8 +40,8 @@ async function cargarDatosDesdeCarpeta(rutaCarpeta) {
             const producto = JSON.parse(contenidoJSON);
   
             if (producto) {
-                const query = 'INSERT INTO productos ( name, count, unitCost, currency, image) VALUES ( ?, ?, ?, ?, ?)';
-                const values = [ producto.name, producto.count, producto.unitCost, producto.currency, producto.image];
+                const query = 'INSERT INTO productos ( name, unitCost, currency, image) VALUES ( ?, ?, ?, ?)';
+                const values = [ producto.name, producto.cost, producto.currency, producto.image];
   
                 await getConn().query(query, values);
                 await getConn().query('COMMIT');
