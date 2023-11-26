@@ -7,7 +7,8 @@ const productsRoutes = require('./routes/productsRoutes');
 const products_commentsRoutes = require('./routes/products_commentsRoutes');
 const sellRoutes = require('./routes/sellRoutes');
 const user_cartRoutes = require('./routes/user_cartRoutes');
-const jwt = require("jsonwebtoken")
+const jwt = require("jsonwebtoken");
+const db = require('./db/conn');
 const SECRET_KEY = "Clave Secreta"
 
 
@@ -32,16 +33,23 @@ app.use('/sell', sellRoutes);
 
 app.use('/user_cart', user_cartRoutes);
 
-app.post("/login", (req, res) => {
+app.post("/login", login);
+
+async function login(req, res) {
     const { username, password } = req.body;
-    if (username === "admin" && password === "admin") {
-        const token = jwt.sign({ username}, SECRET_KEY);
+    let conn = db.getConn();
+    const usuarios = await conn.query("select * FROM usuarios")
+    console.log(usuarios);
+    const usuario = usuarios.find(u => u.username === username)
+    if (usuario && usuario.password === password) {
+        const token = jwt.sign({ id : usuario.id }, SECRET_KEY);
         res.status(200).json({ token });
     } else {
         res.status(401).json({ message: "Usuario y/o contraseña incorrecto"});
     }
-});
+};
 
+db.createConection();
 
 app.listen(port, () => {
     console.log(`Servidor corriendo en http://localhost:${port}`);
